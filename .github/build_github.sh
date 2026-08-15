@@ -41,7 +41,8 @@ mv ./tmp/SideStoreSupport.framework Payload/LiveContainer.app/Frameworks
 
 # download SideStore
 cd tmp
-wget https://github.com/LiveContainer/SideStore/releases/download/nightly/SideStore.ipa
+# @codebuff custom build: pull SideStore from SiamSadik fork (heartbeat fix)
+wget https://github.com/SiamSadik/SideStore/releases/download/custom-heartbeat/SideStore.ipa
 unzip SideStore.ipa
 cd ..
 
