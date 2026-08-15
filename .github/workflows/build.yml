@@ -142,3 +142,4 @@ jobs:
             .github/apps_ss_lc.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+# @codebuff custom LC+SS build (heartbeat SideStore) - workflow registration touch
