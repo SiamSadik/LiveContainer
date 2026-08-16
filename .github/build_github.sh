@@ -41,8 +41,8 @@ mv ./tmp/SideStore.framework Payload/LiveContainer.app/Frameworks
 
 # download SideStore
 cd tmp
-# @codebuff custom build: pull SideStore from SiamSadik fork (stable base + log export + tunnel-bypass)
-wget https://github.com/SiamSadik/SideStore/releases/download/rsd-bypass/SideStore.ipa
+# @codebuff custom build: pull SideStore from SiamSadik fork (inipa-tunnel: embedded in-IPA packet tunnel)
+wget https://github.com/SiamSadik/SideStore/releases/download/inipa-tunnel/SideStore.ipa
 unzip SideStore.ipa
 cd ..
 
@@ -66,11 +66,22 @@ cp -r ./Payload/LiveContainer.app/Frameworks/SideStoreApp.framework/Frameworks .
 /usr/libexec/PlistBuddy -c "Set :CFBundleExecutable LiveWidgetExtension"  ./Payload/LiveContainer.app/PlugIns/LiveWidgetExtension.appex/Info.plist
 mv ./Payload/LiveContainer.app/PlugIns/LiveWidgetExtension.appex/AltWidgetExtension ./Payload/LiveContainer.app/PlugIns/LiveWidgetExtension.appex/LiveWidgetExtension
 
+# In-IPA tunnel: embed the prebuilt packet-tunnel provider (LocalDevVPN route-fix logic,
+# /32-route in-subnet tunnel). Its bundle ID was already set to com.kdt.livecontainer.TunnelProv
+# in the committed appex; iLoader re-signs it (and the main app) with the Network Extensions
+# entitlement when installed via the custom iloader-ne tool.
+mkdir -p ./Payload/LiveContainer.app/PlugIns
+cp -r ./.github/tunnel/TunnelProv.appex ./Payload/LiveContainer.app/PlugIns/TunnelProv.appex
+/usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.kdt.livecontainer.TunnelProv" ./Payload/LiveContainer.app/PlugIns/TunnelProv.appex/Info.plist
+
 # Sign
 rm -r .zsign_cache
 find payloadlc/Payload -type d -name "_CodeSignature" -exec rm -r {} +
 
 ldid -S.github/sidelc/LiveWidgetExtension_adhoc.xml ./Payload/LiveContainer.app/PlugIns/LiveWidgetExtension.appex/LiveWidgetExtension
+
+# fake-sign the embedded tunnel extension with the Network Extensions entitlement
+ldid -S.github/tunnel/TunnelProv.entitlements ./Payload/LiveContainer.app/PlugIns/TunnelProv.appex/TunnelProv
 
 # package
 zip -r "$scheme+SideStore.ipa" "Payload" -x "._*" -x ".DS_Store" -x "__MACOSX"
