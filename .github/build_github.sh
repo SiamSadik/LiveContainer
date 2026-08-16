@@ -41,7 +41,8 @@ mv ./tmp/SideStore.framework Payload/LiveContainer.app/Frameworks
 
 # download SideStore
 cd tmp
-wget https://github.com/LiveContainer/SideStore/releases/download/nightly/SideStore.ipa
+# @codebuff custom build: pull SideStore from SiamSadik fork (stable base + log export)
+wget https://github.com/SiamSadik/SideStore/releases/download/stable-export/SideStore.ipa
 unzip SideStore.ipa
 cd ..
 
